@@ -1,0 +1,46 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a1a;
+  font-family: sans-serif;
+  color: #ffffff;
+}
+
+.tablero {
+  display: grid;
+  grid-template-columns: repeat(10, 56px);
+  grid-template-rows: repeat(10, 56px);
+  width: 840px;
+  height: 740px;
+  border: 4px solid #3b2a1a;
+  border-radius: 8px;
+  overflow: hidden;
+  background-image: url('../assets/fondo_juego.jpeg');
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.celda {
+  width: 56px;
+  height: 56px;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+}
+
+
+.celda.roca {
+  background-image: url('../assets/roca-camino.png');
+  width: 200px;
+  height: 200px;
+}
