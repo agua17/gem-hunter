@@ -1,0 +1,24 @@
+.game-container {
+  position: relative;
+  width: 1430px;
+  margin: 68px auto 0;
+}
+
+#lives {
+  position: fixed;
+  top: 15px;
+  z-index: 1;
+  color: #000000;
+  font-family: "VT323", monospace;
+  font-size: 25px;
+}
+
+#lives {
+  right: 35px;
+  text-align: center;
+}
+
+canvas {
+  display: block;
+  overflow: hidden;
+}

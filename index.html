@@ -1,24 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Gem Hunter</title>
-
-  <link rel="stylesheet" href="/css/style.css">
-
-  <script src="./main.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gem Hunter</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
+<div class="game-container">
+    <div id="lives">VIDAS: 3</div>
+    <canvas id="miCanvas" width="1430" height="612"></canvas>
+</div>
 
-  <main>
-    <canvas id="miCanvas" width="1648" height="927" aria-label="Tablero del juego Frogger">
-    </canvas>
-  </main>
-
+<script src="init.js"></script>
 </body>
-
 </html>
