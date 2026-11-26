@@ -4,7 +4,6 @@
   margin: 68px auto 0;
 }
 
-#timer,
 #lives {
   position: fixed;
   top: 15px;
@@ -14,19 +13,12 @@
   font-size: 25px;
 }
 
-#timer {
-  left: 50%;
-  transform: translateX(-50%);
-}
-
 #lives {
   right: 35px;
   text-align: center;
 }
 
 canvas {
-  border: 5px solid rgb(43, 43, 43);
   display: block;
   overflow: hidden;
-  background-color: rgb(55, 52, 52);
 }
