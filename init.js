@@ -1,14 +1,23 @@
 
 const canvas = document.getElementById("miCanvas")
 const ctx = canvas.getContext("2d")
+const livesElement = document.getElementById("lives")
+const timerElement = document.getElementById("timer")
+
+// Tiempo del juego
+let timeLeft = 180
+let timerInterval
+let animationId
 
 // Tamaño del tablero
-const tileSize = 110
+const tileSize = 102
 const rows = 14
 const columns = 14
 
-let animationId
-
+// Dibujar vidas
+function drawLives() {
+    livesElement.textContent = `VIDAS: ${miner.lives}`
+}
 // Minero
 const miner = {
     positionX: 15,
@@ -16,7 +25,9 @@ const miner = {
     width: 70,
     height: 90,
     direction: "right",
-    currentFrame: 0
+    currentFrame: 0,
+    lives: 3,
+    movement: null
 }
 
 // Imágenes del minero
@@ -40,7 +51,6 @@ minerImages.left[1].src = "img/miner-left-2.png"
 minerImages.right[0].src = "img/miner-right-1.png"
 minerImages.right[1].src = "img/miner-right-2.png"
 
-
 // Fondo de arena
 function drawBackground() {
     for (let row = 0; row < rows; row++) {
@@ -57,11 +67,9 @@ function drawBackground() {
     }
 }
 
-
 // Dibujar minero
 function drawMiner() {
-    const images = minerImages[miner.direction]
-    const image = images[miner.currentFrame]
+    const image = minerImages[miner.direction][miner.currentFrame]
 
     if (image.complete && image.naturalWidth > 0) {
         ctx.drawImage(
@@ -75,52 +83,107 @@ function drawMiner() {
 }
 
 
+
+// Movimiento del minero
+function updateMinerMovement(timestamp) {
+    if (!miner.movement) return
+
+    const progress = Math.min(
+        (timestamp - miner.movement.startedAt) / miner.movement.duration,
+        1
+    )
+
+    miner.positionX = miner.movement.startX
+        + (miner.movement.targetX - miner.movement.startX) * progress
+
+    miner.positionY = miner.movement.startY
+        + (miner.movement.targetY - miner.movement.startY) * progress
+
+    if (progress === 1) {
+        miner.positionX = miner.movement.targetX
+        miner.positionY = miner.movement.targetY
+        miner.movement = null
+        miner.currentFrame = 0
+    }
+}
+
+function moveMiner(direction) {
+    if (miner.movement) return
+
+    let targetX = miner.positionX
+    let targetY = miner.positionY
+
+    if (direction === "up" && miner.positionY - tileSize >= 5) {
+        targetY -= tileSize
+    } else if (direction === "down" && miner.positionY + tileSize + miner.height <= canvas.height - 5) {
+        targetY += tileSize
+    } else if (direction === "right" && miner.positionX + tileSize + miner.width <= canvas.width - 15) {
+        targetX += tileSize
+    } else if (direction === "left" && miner.positionX - tileSize >= 15) {
+        targetX -= tileSize
+    }
+
+    if (targetX === miner.positionX && targetY === miner.positionY) return
+
+    miner.direction = direction
+    miner.currentFrame = 1
+
+    miner.movement = {
+        startX: miner.positionX,
+        startY: miner.positionY,
+        targetX,
+        targetY,
+        startedAt: performance.now(),
+        duration: 200
+    }
+}
+
+// Cronómetro
+function drawTimer() {
+    const minutes = Math.floor(timeLeft / 60)
+    const seconds = timeLeft % 60
+    timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`
+}
+
+function startTimer() {
+    timerInterval = setInterval(function () {
+        if (timeLeft > 0) {
+            timeLeft--
+        } else {
+            clearInterval(timerInterval)
+        }
+    }, 1000)
+}
+
 // Dibujar juego
-function drawGame() {
+function drawGame(timestamp) {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+    updateMinerMovement(timestamp)
     drawBackground()
+    drawLives()
+    drawTimer()
     drawMiner()
 
     animationId = requestAnimationFrame(drawGame)
 }
 
-
-// Movimiento del minero
-document.addEventListener("keydown", function(event) {
+// Controles del minero
+document.addEventListener("keydown", function (event) {
     if (event.repeat) return
 
-    let moved = false
-
-    if (event.key === "ArrowUp" && miner.positionY - tileSize >= 5) {
-        miner.positionY -= tileSize
-        miner.direction = "up"
-        moved = true
+    const directions = {
+        ArrowUp: "up",
+        ArrowDown: "down",
+        ArrowLeft: "left",
+        ArrowRight: "right"
     }
 
-    if (event.key === "ArrowDown" && miner.positionY + tileSize + miner.height <= canvas.height - 5) {
-        miner.positionY += tileSize
-        miner.direction = "down"
-        moved = true
-    }
+    const direction = directions[event.key]
 
-    if (event.key === "ArrowRight" && miner.positionX + tileSize + miner.width <= canvas.width - 15) {
-        miner.positionX += tileSize
-        miner.direction = "right"
-        moved = true
-    }
-
-    if (event.key === "ArrowLeft" && miner.positionX - tileSize >= 15) {
-        miner.positionX -= tileSize
-        miner.direction = "left"
-        moved = true
-    }
-
-    if (moved) {
-        miner.currentFrame = miner.currentFrame === 0 ? 1 : 0
-    }
+    if (direction) moveMiner(direction)
 })
 
-
 // Iniciar juego
+startTimer()
 drawGame()
